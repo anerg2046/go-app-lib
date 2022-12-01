@@ -35,3 +35,43 @@ func IsNil(i any) bool {
 func Ptr(i any) *any {
 	return &i
 }
+
+// 从切片中删除某个元素
+func RemoveItem[T comparable](a []T, elem T) []T {
+	ret := make([]T, 0, len(a))
+	for _, val := range a {
+		if val != elem {
+			ret = append(ret, val)
+		}
+	}
+	return ret
+}
+
+// 切片去重
+func RemoveDuplicates[T comparable](a []T) []T {
+	ret := []T{}
+	m := make(map[T]struct{}) //map的值不重要
+	for _, v := range a {
+		if _, ok := m[v]; !ok {
+			ret = append(ret, v)
+			m[v] = struct{}{}
+		}
+	}
+	return ret
+}
+
+// 切片转为interface{}切片
+func ToInterfaceSlice(slice any) []any {
+	s := reflect.ValueOf(slice)
+	if s.Kind() != reflect.Slice {
+		panic("InterfaceSlice() given a non-slice type")
+	}
+
+	ret := make([]any, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = s.Index(i).Interface()
+	}
+
+	return ret
+}

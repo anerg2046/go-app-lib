@@ -36,18 +36,39 @@ func VerifyMobileFormat(mobileNum string) bool {
 	return reg.MatchString(mobileNum)
 }
 
+// 处理非可见字符
+func Trim(content string) (str string) {
+	defer func() {
+		if err := recover(); err != nil {
+			str = ""
+		}
+	}()
+	newByte := make([]byte, 0)
+	if len(content) > 0 {
+		for _, b := range []byte(content) {
+			if b < 32 { //小于32的字符都可以以这样的方式处理，本次只处理0
+				newByte = append(newByte, 32)
+			} else {
+				newByte = append(newByte, b)
+			}
+		}
+	}
+	str = strings.TrimSpace(string(newByte))
+	return
+}
+
 // 替换括号为中文括号
-func CnBrackets(content string) string {
-	content = strings.TrimSpace(content)
-	content = strings.ReplaceAll(content, "(", "（")
-	content = strings.ReplaceAll(content, ")", "）")
-	return content
+func CnBrackets(content string) (rsp string) {
+	rsp = Trim(content)
+	rsp = strings.ReplaceAll(rsp, "(", "（")
+	rsp = strings.ReplaceAll(rsp, ")", "）")
+	return rsp
 }
 
 // 替换括号为英文括号
-func EnBrackets(content string) string {
-	content = strings.TrimSpace(content)
-	content = strings.ReplaceAll(content, "（", "(")
-	content = strings.ReplaceAll(content, "）", ")")
-	return content
+func EnBrackets(content string) (rsp string) {
+	rsp = Trim(content)
+	rsp = strings.ReplaceAll(rsp, "（", "(")
+	rsp = strings.ReplaceAll(rsp, "）", ")")
+	return rsp
 }
