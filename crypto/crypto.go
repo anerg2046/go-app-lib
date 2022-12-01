@@ -5,7 +5,7 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"fmt"
-	"go-lib/str"
+	"go-app/lib/str"
 )
 
 type crypto struct {
