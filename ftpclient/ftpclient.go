@@ -2,7 +2,7 @@ package ftpclient
 
 import (
 	"fmt"
-	"go-app/config"
+	"go-app/lib/conf"
 	"go-app/lib/logger"
 	"io"
 	"os"
@@ -15,7 +15,8 @@ import (
 const LOG_MODULE = "FTP ERROR"
 
 type ftpClient struct {
-	Conn *ftp.ServerConn
+	Conn   *ftp.ServerConn
+	config conf.FtpConf
 }
 
 type FileInfo struct {
@@ -23,10 +24,10 @@ type FileInfo struct {
 	Dir   string
 }
 
-func Dail() (ftpclient *ftpClient, err error) {
+func Dail(cfg conf.FtpConf) (ftpclient *ftpClient, err error) {
 	Conn, err := ftp.Dial(
-		fmt.Sprintf("%s:%d", config.FTP.Address, config.FTP.Port),
-		ftp.DialWithTimeout(time.Duration(config.FTP.Timeout)*time.Second),
+		fmt.Sprintf("%s:%d", cfg.Address, cfg.Port),
+		ftp.DialWithTimeout(time.Duration(cfg.Timeout)*time.Second),
 		// ftp.DialWithExplicitTLS(&tls.Config{InsecureSkipVerify: true}),
 		ftp.DialWithDisabledEPSV(false),
 	)
@@ -34,13 +35,13 @@ func Dail() (ftpclient *ftpClient, err error) {
 		logger.Error(LOG_MODULE, zap.Error(err))
 		return
 	}
-	err = Conn.Login(config.FTP.User, config.FTP.Pass)
+	err = Conn.Login(cfg.User, cfg.Pass)
 	if err != nil {
 		logger.Error(LOG_MODULE, zap.Error(err))
 		return
 	}
 
-	return &ftpClient{Conn: Conn}, nil
+	return &ftpClient{Conn: Conn, config: cfg}, nil
 }
 
 func (f *ftpClient) Close() (err error) {
@@ -56,7 +57,7 @@ func (f *ftpClient) Download(entry *ftp.Entry) {
 	if entry.Size == 0 {
 		return
 	}
-	localPath := config.FTP.LocalPath + entry.Name
+	localPath := f.config.LocalPath + entry.Name
 
 	localFile, err := os.OpenFile(localPath, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
