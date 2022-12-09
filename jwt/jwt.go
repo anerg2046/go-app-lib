@@ -7,14 +7,6 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-// 载荷，可以加一些自己需要的信息
-type CustomClaims struct {
-	ID     uint   `json:"id,omitempty"`
-	Nick   string `json:"nick,omitempty"`
-	Avatar string `json:"avatar,omitempty"`
-	jwt.StandardClaims
-}
-
 // 一些常量
 var (
 	ErrTokenExpired     error = errors.New("Token已过期")
@@ -35,21 +27,21 @@ func init() {
 	}
 }
 
-func CreateToken(claims CustomClaims) (string, error) {
+func CreateToken(claims config.JwtClaims) (string, error) {
 	return jwtauth.createToken(claims)
 }
 
-func (j *jwtAuth) createToken(claims CustomClaims) (string, error) {
+func (j *jwtAuth) createToken(claims config.JwtClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(j.SigningKey)
 }
 
-func ParseToken(token string) (*CustomClaims, error) {
+func ParseToken(token string) (*config.JwtClaims, error) {
 	return jwtauth.parseToken(token)
 }
 
-func (j *jwtAuth) parseToken(tokenString string) (*CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+func (j *jwtAuth) parseToken(tokenString string) (*config.JwtClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &config.JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.SigningKey, nil
 	})
 	if err != nil {
@@ -65,7 +57,7 @@ func (j *jwtAuth) parseToken(tokenString string) (*CustomClaims, error) {
 			}
 		}
 	}
-	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*config.JwtClaims); ok && token.Valid {
 		return claims, nil
 	}
 	return nil, ErrTokenInvalid
