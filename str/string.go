@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 func Random(len int) string {
@@ -71,4 +72,16 @@ func EnBrackets(content string) (rsp string) {
 	rsp = strings.ReplaceAll(rsp, "（", "(")
 	rsp = strings.ReplaceAll(rsp, "）", ")")
 	return rsp
+}
+
+func HiddenMiddle(content string, bothLen int) string {
+	length := utf8.RuneCountInString(content)
+	if length <= bothLen*2 {
+		return content
+	}
+	contentRune := []rune(content)
+	start := contentRune[0:bothLen]
+	end := contentRune[length-bothLen:]
+	stars := strings.Repeat("*", length-bothLen*2)
+	return string(start) + stars + string(end)
 }

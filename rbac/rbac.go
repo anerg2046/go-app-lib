@@ -51,7 +51,7 @@ func New() *casbin.Enforcer {
 
 // 隐式判断一个用户是否有某个资源的操作权限
 func HasImplicitPermissionsForUser(user, resource, permission string) bool {
-	permissions, err := enforcer.GetImplicitPermissionsForUser(user)
+	permissions, err := New().GetImplicitPermissionsForUser(user)
 	if err != nil {
 		return false
 	}
