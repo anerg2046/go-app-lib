@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"regexp"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -74,6 +75,7 @@ func EnBrackets(content string) (rsp string) {
 	return rsp
 }
 
+// 隐藏字符串中间的内容
 func HiddenMiddle(content string, bothLen int) string {
 	length := utf8.RuneCountInString(content)
 	if length <= bothLen*2 {
@@ -84,4 +86,64 @@ func HiddenMiddle(content string, bothLen int) string {
 	end := contentRune[length-bothLen:]
 	stars := strings.Repeat("*", length-bothLen*2)
 	return string(start) + stars + string(end)
+}
+
+// 定义一个映射表，存储英文符号和对应的中文符号
+// var punctuationMap = map[rune]rune{
+// 	'(':  '（',
+// 	')':  '）',
+// 	'[':  '【',
+// 	']':  '】',
+// 	'{':  '｛',
+// 	'}':  '｝',
+// 	'<':  '《',
+// 	'>':  '》',
+// 	'"':  '“',
+// 	'\'': '‘',
+// 	'?':  '？',
+// 	'!':  '！',
+// 	';':  '；',
+// 	':':  '：',
+// }
+
+// 文本清理
+//
+//	如果英文符号前后都是中文，则替换为中文符号
+//	并移除前后和中间的多余空字符串
+func ClearChineseText(text string, punctuationMap map[rune]rune) string {
+	var space = regexp.MustCompile(`\s+`)    // 定义一个正则表达式，匹配连续的空格
+	var builder strings.Builder              // 使用 strings.Builder 来提高字符串拼接的效率
+	text = strings.TrimSpace(text)           // 移除前后的空字符串
+	text = space.ReplaceAllString(text, " ") // 替换中间的多余空字符串为一个空格
+
+	var content []rune
+	for _, t := range text {
+		content = append(content, t)
+	}
+	count := len(content)
+	for idx, r := range content {
+		if unicode.IsPunct(r) { // 判断是否是标点符号
+			var (
+				prev rune
+				next rune
+			)
+			if idx > 1 && idx < count-1 {
+				prev = content[idx-1]
+				next = content[idx+1]
+			}
+			if unicode.Is(unicode.Han, prev) || unicode.Is(unicode.Han, next) { // 如果符号前或者后是中文，就替换
+				if c, ok := punctuationMap[r]; ok { // 如果映射表里有对应的中文符号，就替换
+					builder.WriteRune(c)
+				} else { // 否则保留原来的符号
+					builder.WriteRune(r)
+				}
+			} else { // 否则保留原来的符号
+				builder.WriteRune(r)
+			}
+		} else { // 不是标点符号就不变
+			builder.WriteRune(r)
+		}
+	}
+	return builder.String()
+
 }
