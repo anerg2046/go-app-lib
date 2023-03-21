@@ -111,39 +111,84 @@ func HiddenMiddle(content string, bothLen int) string {
 //	如果英文符号前后都是中文，则替换为中文符号
 //	并移除前后和中间的多余空字符串
 func ClearChineseText(text string, punctuationMap map[rune]rune) string {
-	var space = regexp.MustCompile(`\s+`)    // 定义一个正则表达式，匹配连续的空格
-	var builder strings.Builder              // 使用 strings.Builder 来提高字符串拼接的效率
+	var space = regexp.MustCompile(`\s+`) // 定义一个正则表达式，匹配连续的空格
+
 	text = strings.TrimSpace(text)           // 移除前后的空字符串
 	text = space.ReplaceAllString(text, " ") // 替换中间的多余空字符串为一个空格
+	text = strings.ReplaceAll(text, "(", "（")
+	text = strings.ReplaceAll(text, ")", "）")
 
-	var content []rune
-	for _, t := range text {
-		content = append(content, t)
-	}
-	count := len(content)
-	for idx, r := range content {
-		if unicode.IsPunct(r) { // 判断是否是标点符号
-			var (
-				prev rune
-				next rune
-			)
-			if idx > 1 && idx < count-1 {
-				prev = content[idx-1]
-				next = content[idx+1]
-			}
-			if unicode.Is(unicode.Han, prev) || unicode.Is(unicode.Han, next) { // 如果符号前或者后是中文，就替换
-				if c, ok := punctuationMap[r]; ok { // 如果映射表里有对应的中文符号，就替换
-					builder.WriteRune(c)
-				} else { // 否则保留原来的符号
-					builder.WriteRune(r)
-				}
-			} else { // 否则保留原来的符号
-				builder.WriteRune(r)
-			}
-		} else { // 不是标点符号就不变
-			builder.WriteRune(r)
+	return text
+
+	// var builder strings.Builder // 使用 strings.Builder 来提高字符串拼接的效率
+	// var content []rune
+	// for _, t := range text {
+	// 	content = append(content, t)
+	// }
+	// count := len(content)
+	// for idx, r := range content {
+	// 	if unicode.IsPunct(r) { // 判断是否是标点符号
+	// 		var (
+	// 			prev rune
+	// 			next rune
+	// 		)
+	// 		if idx > 1 && idx < count-1 {
+	// 			prev = content[idx-1]
+	// 			next = content[idx+1]
+	// 		}
+	// 		if unicode.Is(unicode.Han, prev) || unicode.Is(unicode.Han, next) { // 如果符号前或者后是中文，就替换
+	// 			if c, ok := punctuationMap[r]; ok { // 如果映射表里有对应的中文符号，就替换
+	// 				builder.WriteRune(c)
+	// 			} else { // 否则保留原来的符号
+	// 				builder.WriteRune(r)
+	// 			}
+	// 		} else { // 否则保留原来的符号
+	// 			builder.WriteRune(r)
+	// 		}
+	// 	} else { // 不是标点符号就不变
+	// 		builder.WriteRune(r)
+	// 	}
+	// }
+	// return builder.String()
+
+}
+
+// 移除字符串中不可见字符
+func RemoveNonPrintable(s string) string {
+	var result []rune
+	for _, r := range s {
+		if unicode.IsPrint(r) {
+			result = append(result, r)
 		}
 	}
-	return builder.String()
+	return strings.TrimSpace(string(result))
+}
 
+// 清理人名
+func ClearPersonName(s string) string {
+	// 清理主数据持有人名称，去掉身份证号之类的东西
+	reg, _ := regexp.Compile(`[（|\d]\d+[\d|X|）]$`)
+	if reg.MatchString(s) {
+		s = reg.ReplaceAllString(s, "")
+	}
+
+	// 清理连续星号结尾的
+	reg, _ = regexp.Compile(`\*+$`)
+	if reg.MatchString(s) {
+		s = reg.ReplaceAllString(s, "")
+	}
+
+	// 清理中文括号中间都是星号的
+	reg, _ = regexp.Compile(`（\*+）$`)
+	if reg.MatchString(s) {
+		s = reg.ReplaceAllString(s, "")
+	}
+
+	// 所有人名中间的特殊点替换为英文点
+	reg, _ = regexp.Compile(`[•|·|・|▪|●]`)
+	if reg.MatchString(s) {
+		s = reg.ReplaceAllString(s, ".")
+	}
+
+	return strings.TrimSpace(s)
 }
