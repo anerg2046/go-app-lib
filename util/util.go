@@ -32,7 +32,7 @@ func IsNil(i any) bool {
 }
 
 // 返回任意数据的指针
-func Ptr(i any) *any {
+func Ptr[T any](i T) *T {
 	return &i
 }
 
