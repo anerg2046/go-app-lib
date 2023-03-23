@@ -11,6 +11,7 @@ import (
 type Json interface {
 	i()
 	OK() Json
+	Message(msg string) Json
 	WithData(data interface{}) Json
 	Error(code code.Error) Json
 }
@@ -22,8 +23,9 @@ type jsonRsp struct {
 }
 
 // 输出Json数据
-// 	args 应该是 [data], [data,err]或者空
-// 	err 必须是 code.Error
+//
+//	args 应该是 [data], [data,err]或者空
+//	err 必须是 code.Error
 func JsonResponse(args ...interface{}) Json {
 	rsp := NewJson()
 	if len(args) == 1 {
@@ -48,6 +50,12 @@ func (r *jsonRsp) i() {}
 func (r *jsonRsp) OK() Json {
 	r.Code = 0
 	r.Msg = "OK"
+	return r
+}
+
+func (r *jsonRsp) Message(msg string) Json {
+	r.Code = 0
+	r.Msg = msg
 	return r
 }
 
