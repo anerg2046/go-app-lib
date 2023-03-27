@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"fmt"
+	"go-app/config"
 	"go-app/lib/str"
 )
 
@@ -23,11 +24,11 @@ func NewCrypto() *crypto {
 var Crypto = NewCrypto()
 
 func getKey() []byte {
-	return []byte(str.Random(16))
+	return []byte(config.HASH.AesKey)
 }
 
 func getIv() []byte {
-	return []byte(str.Random(16))
+	return []byte(config.HASH.AesIV)
 }
 
 // aes加密, 分组模式ctr
