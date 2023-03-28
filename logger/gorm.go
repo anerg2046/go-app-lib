@@ -27,8 +27,8 @@ type GormLogger struct {
 //	})
 func NewGormLogger() GormLogger {
 	return GormLogger{
-		ZapLogger:     zapLogger,       // 使用全局的 logger.Logger 对象
-		SlowThreshold: 3 * time.Second, // 慢查询阈值，单位为秒
+		ZapLogger:     zapLogger,        // 使用全局的 logger.Logger 对象
+		SlowThreshold: 10 * time.Second, // 慢查询阈值，单位为秒
 	}
 }
 
