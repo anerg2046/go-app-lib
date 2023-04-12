@@ -192,3 +192,13 @@ func ClearPersonName(s string) string {
 
 	return strings.TrimSpace(s)
 }
+
+// 是否包含中文
+func HasHan(str string) bool {
+	for _, s := range str {
+		if unicode.Is(unicode.Han, s) {
+			return true
+		}
+	}
+	return false
+}
