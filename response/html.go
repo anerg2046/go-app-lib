@@ -60,11 +60,9 @@ func HtmlResponse(tpl string) Html {
 
 type htmlHandle func(c *gin.Context) Html
 
-func HTML() func(h htmlHandle) gin.HandlerFunc {
-	return func(h htmlHandle) gin.HandlerFunc {
-		return func(ctx *gin.Context) {
-			rsp := h(ctx)
-			ctx.HTML(http.StatusOK, rsp.Template(), rsp.Payload())
-		}
+func HTML(h htmlHandle) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		rsp := h(ctx)
+		ctx.HTML(http.StatusOK, rsp.Template(), rsp.Payload())
 	}
 }

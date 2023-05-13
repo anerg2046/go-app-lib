@@ -75,11 +75,9 @@ func (r *jsonRsp) Error(err code.Error) Json {
 
 type jsonHandle func(c *gin.Context) Json
 
-func JSON() func(h jsonHandle) gin.HandlerFunc {
-	return func(h jsonHandle) gin.HandlerFunc {
-		return func(ctx *gin.Context) {
-			rsp := h(ctx)
-			ctx.JSON(http.StatusOK, rsp)
-		}
+func JSON(h jsonHandle) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		rsp := h(ctx)
+		ctx.JSON(http.StatusOK, rsp)
 	}
 }
