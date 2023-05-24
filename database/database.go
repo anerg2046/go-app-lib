@@ -11,16 +11,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-type DBTYPE uint16
-
-const (
-	_ DBTYPE = iota
-	MYSQL
-	MSSQL
-	POSTGRES
-)
-
-func ConnDB(dsn string, dbtype DBTYPE) (*gorm.DB, error) {
+func ConnDB(dsn string, dbtype config.DBTYPE) (*gorm.DB, error) {
 	var (
 		dialector gorm.Dialector
 		db        *gorm.DB
@@ -49,13 +40,13 @@ func ConnDB(dsn string, dbtype DBTYPE) (*gorm.DB, error) {
 	return db, nil
 }
 
-func GenDialector(dsn string, dbtype DBTYPE) (dialector gorm.Dialector) {
+func GenDialector(dsn string, dbtype config.DBTYPE) (dialector gorm.Dialector) {
 	switch dbtype {
-	case MYSQL:
+	case config.DBTYPE_MYSQL:
 		dialector = mysql.Open(dsn)
-	case MSSQL:
+	case config.DBTYPE_MSSQL:
 		dialector = sqlserver.Open(dsn)
-	case POSTGRES:
+	case config.DBTYPE_POSTGRES:
 		dialector = postgres.Open(dsn)
 	default:
 		panic(errors.New("请配置正确的数据库类型"))
