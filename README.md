@@ -1,6 +1,6 @@
 # GO-APP-TEMPLATE 所属库
 
-[![license](https://img.shields.io/github/license/anerg2046/go-app-middleware.svg)](LICENSE)
+[![license](https://img.shields.io/github/license/anerg2046/go-app-lib.svg)](LICENSE)
 
 ## 介绍
 
