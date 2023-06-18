@@ -4,6 +4,7 @@ import (
 	"go-app/config"
 	"go-app/lib/logger"
 	"sync"
+	"time"
 
 	"github.com/casbin/casbin/v2"
 	casbinmodel "github.com/casbin/casbin/v2/model"
@@ -11,10 +12,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var enforcer *casbin.Enforcer
+var enforcer *casbin.SyncedEnforcer
 var once sync.Once
 
-func New() *casbin.Enforcer {
+func New() *casbin.SyncedEnforcer {
 	once.Do(func() {
 		var m casbinmodel.Model
 		if config.CASBIN.Model == nil {
@@ -33,11 +34,12 @@ func New() *casbin.Enforcer {
 			logger.Error("[Casbin]", zap.Error(err))
 			return
 		}
-		enforcer, err = casbin.NewEnforcer(m, orm)
+		enforcer, err = casbin.NewSyncedEnforcer(m, orm)
 		if err != nil {
 			logger.Error("[Casbin]", zap.Error(err))
 			return
 		}
+		enforcer.StartAutoLoadPolicy(1 * time.Hour)
 
 		enforcer.AddFunction("checkSuperAdmin", func(arguments ...any) (any, error) {
 			// 获取用户名
