@@ -4,7 +4,7 @@ import "sync"
 
 type Pool struct {
 	ch chan bool
-	wg *sync.WaitGroup
+	wg sync.WaitGroup
 }
 
 func New(count int) *Pool {
@@ -13,7 +13,6 @@ func New(count int) *Pool {
 	}
 	return &Pool{
 		ch: make(chan bool, count),
-		wg: new(sync.WaitGroup),
 	}
 }
 
