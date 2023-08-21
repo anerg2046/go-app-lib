@@ -3,7 +3,7 @@ package str
 import (
 	"bytes"
 	"crypto/rand"
-	"io/ioutil"
+	"io"
 	"math/big"
 	"regexp"
 	"strings"
@@ -40,6 +40,12 @@ func VerifyMobileFormat(mobileNum string) bool {
 
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(mobileNum)
+}
+
+func VerifyEmailFormat(email string) bool {
+	pattern := `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*` //匹配电子邮箱
+	reg := regexp.MustCompile(pattern)
+	return reg.MatchString(email)
 }
 
 // 处理非可见字符
@@ -230,5 +236,5 @@ func (s SortHans) Less(i, j int) bool {
 // UTF82GBK : transform UTF8 rune into GBK byte array
 func UTF82GBK(src string) ([]byte, error) {
 	GB18030 := simplifiedchinese.All[0]
-	return ioutil.ReadAll(transform.NewReader(bytes.NewReader([]byte(src)), GB18030.NewEncoder()))
+	return io.ReadAll(transform.NewReader(bytes.NewReader([]byte(src)), GB18030.NewEncoder()))
 }
