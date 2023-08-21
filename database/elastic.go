@@ -3,24 +3,41 @@ package database
 import (
 	"context"
 	"errors"
+	"go-app/lib/logger"
 	"net/http"
 	"syscall"
 	"time"
 
 	elastic6 "github.com/olivere/elastic/v6"
 	"github.com/olivere/elastic/v7"
+	"go.uber.org/zap"
 )
 
-func ElasticConn(address ...string) *elastic.Client {
-	esClient, err := elastic.NewClient(
-		elastic.SetSniff(false),
-		elastic.SetURL(address...),
-		elastic.SetRetrier(NewEsRetrier()),
-	)
-	if err != nil {
-		panic(err)
+type ElasticOption struct {
+	Addresses []string
+	User      string
+	Pass      string
+}
+
+func ElasticConn(option ElasticOption) (client *elastic.Client) {
+	var err error
+	if option.Pass == "" {
+		client, err = elastic.NewClient(
+			elastic.SetSniff(false), elastic.SetURL(option.Addresses...),
+			elastic.SetRetrier(NewEsRetrier()),
+		)
+	} else {
+		client, err = elastic.NewClient(
+			elastic.SetSniff(false),
+			elastic.SetURL(option.Addresses...),
+			elastic.SetBasicAuth(option.User, option.Pass),
+			elastic.SetRetrier(NewEsRetrier()),
+		)
 	}
-	return esClient
+	if err != nil {
+		logger.Fatal("[Elastic]", zap.Any("连接失败", err))
+	}
+	return client
 }
 
 type EsRetrier struct {
@@ -49,16 +66,25 @@ func (r *EsRetrier) Retry(ctx context.Context, retry int, req *http.Request, res
 	return wait, stop, nil
 }
 
-func Elastic6Conn(address ...string) *elastic6.Client {
-	esClient, err := elastic6.NewClient(
-		elastic6.SetSniff(false),
-		elastic6.SetURL(address...),
-		elastic6.SetRetrier(NewEs6Retrier()),
-	)
-	if err != nil {
-		panic(err)
+func Elastic6Conn(option ElasticOption) (client *elastic6.Client) {
+	var err error
+	if option.Pass == "" {
+		client, err = elastic6.NewClient(
+			elastic6.SetSniff(false), elastic6.SetURL(option.Addresses...),
+			elastic6.SetRetrier(NewEs6Retrier()),
+		)
+	} else {
+		client, err = elastic6.NewClient(
+			elastic6.SetSniff(false),
+			elastic6.SetURL(option.Addresses...),
+			elastic6.SetBasicAuth(option.User, option.Pass),
+			elastic6.SetRetrier(NewEs6Retrier()),
+		)
 	}
-	return esClient
+	if err != nil {
+		logger.Fatal("[Elastic]", zap.Any("连接失败", err))
+	}
+	return client
 }
 
 type Es6Retrier struct {
