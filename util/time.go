@@ -1,6 +1,8 @@
 package util
 
-import "time"
+import (
+	"time"
+)
 
 func ForceCorrectTime(t time.Time) time.Time {
 	loc, _ := time.LoadLocation("Asia/Shanghai")
