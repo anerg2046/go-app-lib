@@ -16,6 +16,16 @@ func Contain[T comparable](obj T, target []T) bool {
 	return false
 }
 
+// 使用反射检查obj是否包含在target里
+func DeepContain[T any](obj T, target []T) bool {
+	for _, v := range target {
+		if reflect.DeepEqual(obj, v) {
+			return true
+		}
+	}
+	return false
+}
+
 // Pretty 友好显示控制台输出数据
 func Pretty(data any) {
 	src, _ := json.MarshalIndent(data, "", "  ")
