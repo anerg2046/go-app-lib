@@ -1,9 +1,10 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
+
+	"github.com/goccy/go-json"
 )
 
 // 检查obj是否包含在target里
