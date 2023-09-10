@@ -213,6 +213,13 @@ func HasHan(str string) bool {
 	return false
 }
 
+// 获取汉字
+func GetHans(str string) string {
+	reg := regexp.MustCompile(`\p{Han}`)
+	out := reg.FindAllString(str, -1)
+	return strings.Join(out, "")
+}
+
 // 中文按拼音排序
 type SortHans []string
 
