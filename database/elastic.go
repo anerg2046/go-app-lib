@@ -35,7 +35,7 @@ func ElasticConn(option ElasticOption) (client *elastic.Client) {
 		)
 	}
 	if err != nil {
-		logger.Fatal("[Elastic]", zap.Any("连接失败", err))
+		logger.Error("[Elastic]", zap.Any("连接失败", err))
 	}
 	return client
 }
