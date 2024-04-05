@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -48,6 +49,8 @@ func GenDialector(dsn string, dbtype config.DBTYPE) (dialector gorm.Dialector) {
 		dialector = sqlserver.Open(dsn)
 	case config.DBTYPE_POSTGRES:
 		dialector = postgres.Open(dsn)
+	case config.DBTYPE_SQLITE:
+		dialector = sqlite.Open(dsn)
 	default:
 		panic(errors.New("请配置正确的数据库类型"))
 	}
