@@ -41,3 +41,7 @@ func Sha1(message string) string {
 	// 返回十六进制编码的哈希值
 	return hex.EncodeToString(hash[:])
 }
+
+func Base64(s string) string {
+	return base64.StdEncoding.EncodeToString([]byte(s))
+}
