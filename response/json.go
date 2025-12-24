@@ -60,7 +60,7 @@ func (r *jsonRsp) Message(msg string) Json {
 }
 
 func (r *jsonRsp) WithData(data interface{}) Json {
-	if reflect.ValueOf(data).IsZero() {
+	if data == nil {
 		return r
 	}
 	r.Data = data
