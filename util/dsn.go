@@ -13,3 +13,7 @@ func PostgresDSN(host, user, pass, port, dbname string) string {
 func MssqlDSN(host, user, pass, port, dbname string) string {
 	return fmt.Sprintf("sqlserver://%s:%s@%s:%s?database=%s", user, pass, host, port, dbname)
 }
+
+func SqliteDSN(path string) string {
+	return path
+}

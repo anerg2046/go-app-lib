@@ -1,9 +1,10 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
+
+	"github.com/goccy/go-json"
 )
 
 // 检查obj是否包含在target里
@@ -84,4 +85,29 @@ func ToInterfaceSlice(slice any) []any {
 	}
 
 	return ret
+}
+
+// 切分切片
+func SplitSlice[T any](slice []T, size int) [][]T {
+	var chunk [][]T
+	for i := 0; i < len(slice); i += size {
+		end := i + size
+		if end > len(slice) {
+			end = len(slice)
+		}
+		chunk = append(chunk, slice[i:end])
+	}
+	return chunk
+}
+
+// 切分map
+func ChunkMap[K comparable, V any](m map[K]V, size int) [][]V {
+	var chunk [][]V
+	for _, v := range m {
+		chunk = append(chunk, []V{v})
+		if len(chunk) == size {
+			chunk = append(chunk, []V{})
+		}
+	}
+	return chunk
 }

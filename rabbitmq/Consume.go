@@ -1,7 +1,6 @@
 package rabbitmq
 
 import (
-	"fmt"
 	"go-app/lib/logger"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 
 func (r *RabbitMQ) ConsumeSimple() {
 
-	fmt.Printf("%+v\n", r)
+	// fmt.Printf("%+v\n", r)
 
 	defer func() {
 		if err := recover(); err != nil {
